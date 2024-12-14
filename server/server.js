@@ -15,7 +15,7 @@ connectDB();
 const app = express();
 
 const corsOptions = {
-  origin: 'https://vehicle-management-system-of9v.onrender.com',
+  origin: 'https://veichle-management-system.netlify.app',
   credentials: true
 };
 
