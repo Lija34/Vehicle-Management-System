@@ -68,7 +68,7 @@ const Signup = () => {
     }
     setValues({ ...values, error: false, loading: true });
     try {
-      await axios.post('http://localhost:3000/api/auth/register', { name, email, password });
+      await axios.post('https://vehicle-management-system-of9v.onrender.com/api/auth/register', { name, email, password });
       setValues({ ...values, messageType: 'success', message: 'Account created successfully! Please check your inbox to verify your email.', loading: false, name: '', email: '', password: '' });
     } catch (error) {
       const errorMsg = error.response?.data?.error || 'Failed to register user';

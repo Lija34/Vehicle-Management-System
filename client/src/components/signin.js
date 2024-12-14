@@ -26,7 +26,7 @@ const Login = ({ setAuthenticated, setUserRole }) => {
     e.preventDefault();
     setValues({ ...values, error: false, loading: true });
     try {
-      const response = await axios.post('http://localhost:3000/api/auth/login', { email, password }, { withCredentials: true });
+      const response = await axios.post('https://vehicle-management-system-of9v.onrender.com/api/auth/login', { email, password }, { withCredentials: true });
       document.cookie = `token=${response.data.token};path=/;`;
       document.cookie = `role=${response.data.role};path=/;`;
       setValues({ ...values, loading: false });

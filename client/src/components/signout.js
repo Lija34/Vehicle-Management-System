@@ -8,7 +8,7 @@ const Logout = ({ setAuthenticated, setUserRole }) => {
 
   const handleLogout = async () => {
     try {
-      await axios.post('http://localhost:3000/api/auth/logout', {}, { withCredentials: true });
+      await axios.post('https://vehicle-management-system-of9v.onrender.com/api/auth/logout', {}, { withCredentials: true });
       document.cookie = 'token=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;';
       document.cookie = 'role=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;';
       setAuthenticated(false);

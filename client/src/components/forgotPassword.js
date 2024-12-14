@@ -10,7 +10,7 @@ const ForgotPassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post('http://localhost:3000/api/auth/request-password-reset', { email });
+      const { data } = await axios.post('https://vehicle-management-system-of9v.onrender.com/api/auth/request-password-reset', { email });
       setMessage(data.message);
       setError('');
     } catch (error) {

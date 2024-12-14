@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3000';
+const API_URL = 'https://vehicle-management-system-of9v.onrender.com';
 
 const getToken = () => {
   const token = localStorage.getItem('token');
