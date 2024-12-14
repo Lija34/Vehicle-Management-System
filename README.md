@@ -45,16 +45,15 @@ npm install
 
 #### Set up environment variables: Create a .env file in the server directory and add the following:
 
-bash
-PORT=3000
-MONGO_URI=your_mongodb_uri
-JWT_SECRET=your_jwt_secret
-REFRESH_TOKEN_SECRET=your_refresh_token_secret
-EMAIL_VERIFICATION_SECRET=your_email_verification_secret
-EMAIL_USER=your_email_user
-EMAIL_PASS=your_email_pass
-CLIENT_URL=http://localhost:3001
-EMAIL_FROM=your_email_from_address
+
+1. PORT=3000
+2. MONGO_URI=your_mongodb_uri
+3. JWT_SECRET=your_jwt_secret
+4. REFRESH_TOKEN_SECRET=your_refresh_token_secret
+5. EMAIL_VERIFICATION_SECRET=your_email_verification_secret
+6. EMAIL_USER=your_email_user
+7. EMAIL_PASS=your_email_pass
+8. CLIENT_URL=http://localhost:3001
 
 Run the server:
 
@@ -81,16 +80,23 @@ npm start
 ```POST /api/auth/register``` Register a new user.
 
 ```POST /api/auth/login```: Authenticate an existing user.
+
 ```POST /api/auth/userinfo```: get user info.
+
 ```POST /api/auth/request-password-reset```: Request a password reset link.
+
 ```POST /api/auth/reset-password/:token```: Reset the password using the token.
+
 ```GET /api/auth/verify-email/:token```: Verify the user's email.
 
 #### Vehicle Management (Protected Routes)
 
 ```GET /api/vehicles/all```: Get all vehicles.
+
 ```POST /api/vehicles/add```: Add a new vehicle.
+
 ```PUT /api/vehicles/update/:id```: Update an existing vehicle.
+
 ```DELETE /api/vehicles/delete/:id```: Delete a vehicle.
 
 ## Pagination Implementation
