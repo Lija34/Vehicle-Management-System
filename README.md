@@ -105,15 +105,23 @@ Pagination is implemented to manage large sets of vehicle data efficiently.
 #### Server
 
 **express:** Fast, unopinionated, minimalist web framework for Node.js
+
 **mongoose**: MongoDB object modeling for Node.js
+
 **jsonwebtoken:** JSON Web Token implementation (JWT)
+
 **bcryptjs:** Library to hash passwords
+
 **nodemailer:** Send emails from Node.js
+
 **dotenv:** Loads environment variables from a .env file
 
 #### Client
 
 **react:** JavaScript library for building user interfaces
+
 **axios:** Promise-based HTTP client for the browser and Node.js
+
 **react-router-dom:** DOM bindings for React Router
+
 **bootstrap:** CSS framework for developing responsive and mobile-first websites
