@@ -9,9 +9,7 @@ This project is a Vehicle Management System built using MERN (MongoDB, Express, 
 3. [Installation](#installation)
 4. [Usage](#usage)
 5. [API Endpoints](#api-endpoints)
-6. [Folder Structure](#folder-structure)
-7. [Dependencies](#dependencies)
-8. [Pagination Implementation](#pagination-implementation)
+6. [Pagination Implementation](#pagination-implementation)
 
 ## Introduction
 
@@ -36,11 +34,13 @@ The Vehicle Management System is designed to manage vehicle records and includes
 #### Install server dependencies:
 
 cd server
+
 npm install
 
 #### Install client dependencies:
 
 cd ../client
+
 npm install
 
 #### Set up environment variables: Create a .env file in the server directory and add the following:
@@ -55,9 +55,11 @@ EMAIL_USER=your_email_user
 EMAIL_PASS=your_email_pass
 CLIENT_URL=http://localhost:3001
 EMAIL_FROM=your_email_from_address
+
 Run the server:
 
 npm start
+
 Run the client:
 
 cd ../client
@@ -90,39 +92,6 @@ npm start
 ```POST /api/vehicles/add```: Add a new vehicle.
 ```PUT /api/vehicles/update/:id```: Update an existing vehicle.
 ```DELETE /api/vehicles/delete/:id```: Delete a vehicle.
-
-## Folder Structure
-
-vehicle-management-system/
-  ├── client/                    # React front-end application
-  │   ├── public/                # Public assets
-  │   ├── src/                   # Source files
-  │   │   ├── components/        # React components
-  │   │   ├── helpers/           # Helper functions
-  │   │   ├── services/          # Services
-  │   │   ├── utility/           # Utility functions
-  │   │   ├── setupTest.js       # Test setup file
-  │   │   ├── app.tests.js       # Application tests
-  │   │   ├── App.js             # Main App component
-  │   │   └── index.js           # Entry point
-  │   ├── .gitignore             # Git ignore file
-  │   ├── package.json           # NPM dependencies and scripts
-  │   ├── package-lock.json      # Lock file for npm dependencies
-  │   └── .env                   # Environment variables
-  ├── server/                    # Node.js back-end application
-  │   ├── controllers/           # API route controllers
-  │   ├── models/                # Database models
-  │   ├── routes/                # API routes
-  │   ├── utils/                 # Utility functions
-  │   ├── config/                # Configuration files
-  │   ├── middlewares/           # Middleware functions
-  │   ├── server.js              # Server entry point
-  │   ├── .gitignore             # Git ignore file
-  │   ├── package.json           # NPM dependencies and scripts
-  │   ├── package-lock.json      # Lock file for npm dependencies
-  │   └── .env                   # Environment variables
-  └── README.md                  # Project documentation
-
 
 ## Pagination Implementation
 Pagination is implemented to manage large sets of vehicle data efficiently. 
