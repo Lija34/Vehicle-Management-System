@@ -15,7 +15,7 @@ connectDB();
 const app = express();
 
 const corsOptions = {
-  origin: 'http://localhost:3001',
+  origin: 'https://vehicle-management-system-of9v.onrender.com',
   credentials: true
 };
 
