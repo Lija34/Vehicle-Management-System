@@ -39,7 +39,7 @@ npm install
 
 #### Install client dependencies:
 
-cd ../client
+cd  client
 
 npm install
 
@@ -57,11 +57,13 @@ npm install
 
 Run the server:
 
+cd server
+
 npm start
 
 Run the client:
 
-cd ../client
+cd  client
 
 npm start
 
