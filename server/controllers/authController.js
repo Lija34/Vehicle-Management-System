@@ -6,7 +6,6 @@ import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 import {transporter} from '../config/nodemailer.js';
 
-
 dotenv.config();
 
 // User Authentication

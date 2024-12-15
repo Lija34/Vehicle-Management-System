@@ -49,7 +49,7 @@ jobs:
 
       # Step 7: Deploy to Render
       - name: Deploy to Render
-        uses: render-actions/deploy@v1
+        uses: johnbeynon/render-deploy-action@v0.0.8
         with:
           service-id: ${{ secrets.RENDER_PROJECT_ID }}
           api-key: ${{ secrets.RENDER_AUTH_TOKEN }}
