@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post('/register', registerUser);
 router.post('/login', authUser);
-router.get('/userinfo', requireAuth, getUserInfo); // Secure this route with requireAuth
+router.get('/userinfo', requireAuth, getUserInfo);
 router.get('/verify/:token', verifyEmail);
 router.post('/request-password-reset', requestPasswordReset);
 router.post('/reset-password/:token', resetPassword);

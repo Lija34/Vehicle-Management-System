@@ -26,13 +26,16 @@ const Login = ({ setAuthenticated, setUserRole }) => {
     e.preventDefault();
     setValues({ ...values, error: false, loading: true });
     try {
-      const response = await axios.post('https://veichle-management-system.netlify.app/api/auth/login', { email, password }, { withCredentials: true });
+      console.log('Submitting login:', { email, password }); // Debugging
+      const response = await axios.post('https://vehicle-management-system-of9v.onrender.com/api/auth/login', { email, password }, { withCredentials: true });
+      console.log('Login response:', response.data); // Debugging
       document.cookie = `token=${response.data.token};path=/;`;
       document.cookie = `role=${response.data.role};path=/;`;
       setValues({ ...values, loading: false });
       setAuthenticated(true);
       setUserRole(response.data.role);
     } catch (error) {
+      console.error('Login error:', error.response || error.message); // Debugging
       let errorMsg = 'Failed to login';
       if (error.response) {
         const responseError = error.response.data.error || '';
@@ -102,7 +105,7 @@ const Login = ({ setAuthenticated, setUserRole }) => {
             </div>
           </div>
         </div>
-        <button type="submit" className="btn btn-primary w-100">Sinin</button>
+        <button type="submit" className="btn btn-primary w-100">Signin</button>
         <div className="mt-3 text-center">
           <Link to="/forgot-password">Forgot Password?</Link>
         </div>

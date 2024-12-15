@@ -10,31 +10,53 @@ import {transporter} from '../config/nodemailer.js';
 
 dotenv.config();
 
-
 export const authUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
+  console.log('Authenticating user:', email); // Debugging
 
-   const user = await User.findOne({ email });
+  try {
+    const user = await User.findOne({ email });
+    console.log('User found:', user); // Debugging
 
-  if (user && (await user.matchPassword(password))) {
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
-      expiresIn: '30d',
-    });
+    if (user) {
+      const isMatch = await user.matchPassword(password);
+      console.log('Password match result:', isMatch); // Debugging
 
-    res.cookie('token', token, { httpOnly: true, sameSite: 'strict', secure: false, path: '/' });
-    res.cookie('role', user.role, { httpOnly: true, sameSite: 'strict', secure: false, path: '/' });
+      if (isMatch) {
+        if (!user.isVerified) {
+          console.log('User not verified'); // Debugging
+          res.status(401).json({ message: 'Please verify your email before logging in.' });
+          return;
+        }
 
-    res.json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-    });
-  } else {
-    res.status(401);
-    throw new Error('Invalid email or password');
+        const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
+          expiresIn: '30d',
+        });
+        console.log('Generated JWT token:', token); // Debugging
+
+        res.cookie('token', token, { httpOnly: true, sameSite: 'strict', secure: false, path: '/' });
+        res.cookie('role', user.role, { httpOnly: true, sameSite: 'strict', secure: false, path: '/' });
+
+        res.json({
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        });
+      } else {
+        console.log('Invalid password'); // Debugging
+        res.status(401).json({ message: 'Invalid email or password' });
+      }
+    } else {
+      console.log('User not found'); // Debugging
+      res.status(401).json({ message: 'Invalid email or password' });
+    }
+  } catch (error) {
+    console.error('Error in authUser:', error); // Debugging
+    res.status(500).json({ message: 'Server error' });
   }
 });
+
 
 
 export const registerUser = async (req, res) => {
