@@ -26,17 +26,16 @@ const Login = ({ setAuthenticated, setUserRole }) => {
     e.preventDefault();
     setValues({ ...values, error: false, loading: true });
     try {
-      console.log('Submitting login:', { email, password });
-      const response = await axios.post('https://vehicle-management-system-of9v.onrender.com/api/auth/login', { email, password }, { withCredentials: true });
-      console.log('Login response:', response.data);
+      const response = await axios.post('https://veichle-management-system.netlify.app/api/auth/login', { email, password }, { withCredentials: true });
+      document.cookie = `token=${response.data.token};path=/;`;
+      document.cookie = `role=${response.data.role};path=/;`;
       setValues({ ...values, loading: false });
       setAuthenticated(true);
       setUserRole(response.data.role);
     } catch (error) {
-      console.error('Login error:', error.response || error.message);
       let errorMsg = 'Failed to login';
       if (error.response) {
-        const responseError = error.response.data.message || '';
+        const responseError = error.response.data.error || '';
         if (error.response.status === 401 && responseError.includes('verify')) {
           errorMsg = 'Please verify your email before logging in. Check your inbox for the verification link.';
         } else if (error.response.status === 400 && responseError.includes('not exist')) {
@@ -55,7 +54,7 @@ const Login = ({ setAuthenticated, setUserRole }) => {
 
   const showError = () => (
     <div className="alert alert-danger" style={{ display: error ? "" : "none" }}>
-      {error}
+      {typeof error === 'string' ? error : error}
     </div>
   );
 
@@ -74,27 +73,27 @@ const Login = ({ setAuthenticated, setUserRole }) => {
       <form onSubmit={handleSubmit} className="card p-4">
         <div className="mb-3">
           <label htmlFor="email" className="form-label">Email</label>
-          <input
-            onChange={handleChange("email")}
-            type="email"
-            className="form-control"
-            id="email"
-            placeholder="Email"
-            value={email}
-            required
+          <input 
+            onChange={handleChange("email")} 
+            type="email" 
+            className="form-control" 
+            id="email" 
+            placeholder="Email" 
+            value={email} 
+            required 
           />
         </div>
         <div className="mb-3">
           <label htmlFor="password" className="form-label">Password</label>
           <div className="input-group">
-            <input
-              onChange={handleChange("password")}
-              type={showPassword ? "text" : "password"}
-              className="form-control"
-              id="password"
-              placeholder="Password"
-              value={password}
-              required
+            <input 
+              onChange={handleChange("password")} 
+              type={showPassword ? "text" : "password"} 
+              className="form-control" 
+              id="password" 
+              placeholder="Password" 
+              value={password} 
+              required 
             />
             <div className="input-group-append">
               <span className="input-group-text" onClick={toggleShowPassword} style={{ cursor: "pointer" }}>
@@ -103,7 +102,7 @@ const Login = ({ setAuthenticated, setUserRole }) => {
             </div>
           </div>
         </div>
-        <button type="submit" className="btn btn-primary w-100">Signin</button>
+        <button type="submit" className="btn btn-primary w-100">Sinin</button>
         <div className="mt-3 text-center">
           <Link to="/forgot-password">Forgot Password?</Link>
         </div>
