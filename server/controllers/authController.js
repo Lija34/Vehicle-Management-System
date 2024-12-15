@@ -20,10 +20,11 @@ export const authUser = asyncHandler(async (req, res) => {
 
     if (user) {
       const isMatch = await bcrypt.compare(password, user.password);
-      console.log('Password match:', isMatch);
+      console.log('Password match result:', isMatch);
 
       if (isMatch) {
         if (!user.isVerified) {
+          console.log('User not verified');
           res.status(401).json({ message: 'Please verify your email before logging in.' });
           return;
         }
