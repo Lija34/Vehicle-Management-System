@@ -8,17 +8,6 @@ import {transporter} from '../config/nodemailer.js';
 
 dotenv.config();
 
-
-import User from '../models/user.js';
-import asyncHandler from 'express-async-handler';
-import jwt from 'jsonwebtoken';
-import { generateToken, generateVerificationToken } from '../utils/generateToken.js';
-import bcrypt from 'bcryptjs';
-import dotenv from 'dotenv';
-import { transporter } from '../config/nodemailer.js';
-
-dotenv.config();
-
 // User Authentication
 export const authUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -37,7 +26,9 @@ export const authUser = asyncHandler(async (req, res) => {
         return;
       }
 
-      const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '30d' });
+      const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
+        expiresIn: '30d',
+      });
       console.log('Generated JWT token:', token);
 
       res.cookie('token', token, { httpOnly: true, sameSite: 'strict', secure: false, path: '/' });
@@ -95,20 +86,22 @@ export const requestPasswordReset = async (req, res) => {
   });
 };
 
-// Reset Password
+//reset password
+
 export const resetPassword = asyncHandler(async (req, res) => {
   const { token } = req.params;
   const { newPassword } = req.body;
-  console.log('Received reset password request with token:', token);
+  console.log('Received reset password request with token:', token); // Debugging
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log('Decoded token:', decoded);
+    console.log('Decoded token:', decoded); // Debugging
 
     const user = await User.findById(decoded.id);
-    console.log('Found user:', user);
+    console.log('Found user:', user); // Debugging
 
     if (!user) {
+      console.log('User not found'); // Debugging
       res.status(400).json({ message: 'Invalid token or user does not exist' });
       return;
     }
@@ -116,11 +109,11 @@ export const resetPassword = asyncHandler(async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(newPassword, salt);
     await user.save();
-    console.log('Password reset successfully for user:', user.email);
+    console.log('Password reset successfully for user:', user.email); // Debugging
 
     res.json({ message: 'Password reset successfully' });
   } catch (error) {
-    console.error('Error in resetPassword:', error);
+    console.error('Error in resetPassword:', error); // Debugging
     res.status(400).json({ message: 'Invalid token or error processing request' });
   }
 });
