@@ -12,19 +12,19 @@ dotenv.config();
 
 export const authUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
-  console.log('Authenticating user:', email);
+  console.log('Authenticating user:', email); // Debugging
 
   try {
     const user = await User.findOne({ email });
-    console.log('User found:', user);
+    console.log('User found:', user); // Debugging
 
     if (user) {
-      const isMatch = await user.matchPassword(password);
-      console.log('Password match result:', isMatch);
+      const isMatch = await bcrypt.compare(password, user.password);
+      console.log('Password match result:', isMatch); // Debugging
 
       if (isMatch) {
         if (!user.isVerified) {
-          console.log('User not verified');
+          console.log('User not verified'); // Debugging
           res.status(401).json({ message: 'Please verify your email before logging in.' });
           return;
         }
@@ -32,7 +32,7 @@ export const authUser = asyncHandler(async (req, res) => {
         const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
           expiresIn: '30d',
         });
-        console.log('Generated JWT token:', token);
+        console.log('Generated JWT token:', token); // Debugging
 
         res.cookie('token', token, { httpOnly: true, sameSite: 'strict', secure: false, path: '/' });
         res.cookie('role', user.role, { httpOnly: true, sameSite: 'strict', secure: false, path: '/' });
@@ -44,18 +44,19 @@ export const authUser = asyncHandler(async (req, res) => {
           role: user.role,
         });
       } else {
-        console.log('Invalid password');
+        console.log('Invalid password'); // Debugging
         res.status(401).json({ message: 'Invalid email or password' });
       }
     } else {
-      console.log('User not found');
+      console.log('User not found'); // Debugging
       res.status(401).json({ message: 'Invalid email or password' });
     }
   } catch (error) {
-    console.error('Error in authUser:', error);
+    console.error('Error in authUser:', error); // Debugging
     res.status(500).json({ message: 'Server error' });
   }
 });
+
 
 
 export const registerUser = async (req, res) => {

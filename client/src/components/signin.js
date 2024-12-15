@@ -38,10 +38,10 @@ const Login = ({ setAuthenticated, setUserRole }) => {
       console.error('Login error:', error.response || error.message); // Debugging
       let errorMsg = 'Failed to login';
       if (error.response) {
-        const responseError = error.response.data.error || '';
-        if (error.response.status === 401 && responseError.includes('verify')) {
+        const responseError = error.response.data.message || '';
+        if (error.response.status === 401 && responseError.includes('verify')) { // Corrected here
           errorMsg = 'Please verify your email before logging in. Check your inbox for the verification link.';
-        } else if (error.response.status === 400 && responseError.includes('not exist')) {
+        } else if (error.response.status === 400 && responseError.includes('not exist')) { // Corrected here
           errorMsg = (
             <span>
               User not found. Please <Link to="/signup">sign up</Link>.
