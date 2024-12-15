@@ -191,8 +191,7 @@ export const verifyEmail = asyncHandler(async (req, res) => {
     console.log('User found for verification:', user);
 
     if (!user) {
-      res.status(400).json({ message: 'Invalid or expired token' });
-      return;
+      return res.status(400).json({ message: 'Invalid or expired token' });
     }
 
     user.isVerified = true;
@@ -206,6 +205,7 @@ export const verifyEmail = asyncHandler(async (req, res) => {
     res.status(400).json({ message: 'Invalid token or error processing request' });
   }
 });
+
 
 export const getUserInfo = async (req, res) => {
   const user = req.user;
