@@ -9,51 +9,59 @@ import {transporter} from '../config/nodemailer.js';
 dotenv.config();
 
 // User Authentication
+
 export const authUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   console.log('Authenticating user:', email);
 
-  const user = await User.findOne({ email });
-  console.log('User found:', user);
+  try {
+    const user = await User.findOne({ email });
+    console.log('User found:', user);
 
-  if (user) {
-    const isMatch = await bcrypt.compare(password, user.password);
-    console.log('Password match:', isMatch);
+    if (user) {
+      const isMatch = await bcrypt.compare(password, user.password);
+      console.log('Password match:', isMatch);
 
-    if (isMatch) {
-      if (!user.isVerified) {
-        res.status(401).json({ message: 'Please verify your email before logging in.' });
-        return;
+      if (isMatch) {
+        if (!user.isVerified) {
+          res.status(401).json({ message: 'Please verify your email before logging in.' });
+          return;
+        }
+
+        const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
+          expiresIn: '30d',
+        });
+        console.log('Generated JWT token:', token);
+
+        res.cookie('token', token, { httpOnly: true, sameSite: 'strict', secure: false, path: '/' });
+        res.cookie('role', user.role, { httpOnly: true, sameSite: 'strict', secure: false, path: '/' });
+
+        res.json({
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        });
+      } else {
+        console.log('Invalid password');
+        res.status(401).json({ message: 'Invalid email or password' });
       }
-
-      const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
-        expiresIn: '30d',
-      });
-      console.log('Generated JWT token:', token);
-
-      res.cookie('token', token, { httpOnly: true, sameSite: 'strict', secure: false, path: '/' });
-      res.cookie('role', user.role, { httpOnly: true, sameSite: 'strict', secure: false, path: '/' });
-
-      res.json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      });
     } else {
-      console.log('Invalid password');
+      console.log('User not found');
       res.status(401).json({ message: 'Invalid email or password' });
     }
-  } else {
-    console.log('User not found');
-    res.status(401).json({ message: 'Invalid email or password' });
+  } catch (error) {
+    console.error('Error in authUser:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
+
 // Password Reset Request
+
 export const requestPasswordReset = async (req, res) => {
   const { email } = req.body;
-  console.log('Password reset request for email:', email);
+  console.log('Password reset request for email:', email); // Debugging
 
   const user = await User.findOne({ email });
 
@@ -65,9 +73,10 @@ export const requestPasswordReset = async (req, res) => {
   user.resetPasswordToken = resetToken;
   user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
   await user.save();
+  console.log('Reset token and expiration date set for user:', user); // Debugging
 
   const resetUrl = `${process.env.FRONTEND_DOMAIN}/reset/${resetToken}`;
-  console.log('Password reset URL:', resetUrl);
+  console.log('Password reset URL:', resetUrl); // Debugging
 
   const mailOptions = {
     from: process.env.EMAIL_FROM,
@@ -94,20 +103,22 @@ export const resetPassword = asyncHandler(async (req, res) => {
   console.log('Received reset password request with token:', token); // Debugging
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log('Decoded token:', decoded); // Debugging
-
-    const user = await User.findById(decoded.id);
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() }
+    });
     console.log('Found user:', user); // Debugging
 
     if (!user) {
-      console.log('User not found'); // Debugging
+      console.log('Invalid or expired token'); // Debugging
       res.status(400).json({ message: 'Invalid token or user does not exist' });
       return;
     }
 
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(newPassword, salt);
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
     await user.save();
     console.log('Password reset successfully for user:', user.email); // Debugging
 
@@ -117,6 +128,7 @@ export const resetPassword = asyncHandler(async (req, res) => {
     res.status(400).json({ message: 'Invalid token or error processing request' });
   }
 });
+;
 
 export const registerUser = async (req, res) => {
   const { name, email, password } = req.body;

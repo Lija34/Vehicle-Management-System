@@ -48,7 +48,7 @@ The server CI/CD pipeline automates the following tasks for the server-side appl
 4. Run tests(commented out for now)
 5. Build the application for production and deploy to render
 
-NOTE! The CI/CD pipelines are configured to trigger automatically on push or pull request to the main branch. For details, navigate to the .github/workflows directory.
+**NOTE!** The CI/CD pipelines are configured to trigger automatically on push or pull request to the main branch. For details, navigate to the .github/workflows directory.
 
 ## Installation
 

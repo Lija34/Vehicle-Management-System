@@ -55,7 +55,7 @@ const Login = ({ setAuthenticated, setUserRole }) => {
 
   const showError = () => (
     <div className="alert alert-danger" style={{ display: error ? "" : "none" }}>
-      {typeof error === 'string' ? error : error}
+      {error}
     </div>
   );
 
