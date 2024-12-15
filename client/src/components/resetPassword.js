@@ -39,7 +39,7 @@ const ResetPassword = () => {
         hasNumber: /[0-9]/.test(value),
         hasSpecialChar: /[!@#$%^&*(),.?":{}|<>]/.test(value),
         isLongEnough: value.length >= 8,
-        noPersonalInfo: true // Assuming no personal info logic required here
+        noPersonalInfo: true
       };
       setPasswordStrength(updatedStrength);
     }
@@ -136,7 +136,6 @@ const ResetPassword = () => {
               <p className={passwordStrength.isLongEnough ? 'text-success' : 'text-danger'}>
                 {passwordStrength.isLongEnough ? '✓' : '✗'} Minimum 8 characters
               </p>
-              {/* Assuming no personal info check needed */}
             </div>
           )}
         </div>

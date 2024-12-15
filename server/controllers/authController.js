@@ -14,7 +14,7 @@ export const authUser = asyncHandler(async (req, res) => {
 
   const user = await User.findOne({ email });
 
-  if (user && (await user.matchPassword(password))) {
+  if (user && (await bcrypt.compare(password, user.password))) {
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
       expiresIn: '30d',
     });
@@ -136,6 +136,7 @@ export const verifyEmail = async (req, res) => {
   res.status(200).json({ message: 'Email verified successfully' });
 };
 
+
 export const resetPassword = asyncHandler(async (req, res) => {
   const { token } = req.params;
   const { newPassword } = req.body;
@@ -149,7 +150,8 @@ export const resetPassword = asyncHandler(async (req, res) => {
       throw new Error('Invalid token or user does not exist');
     }
 
-    user.password = newPassword;
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
     await user.save();
 
     res.json({ message: 'Password reset successfully' });

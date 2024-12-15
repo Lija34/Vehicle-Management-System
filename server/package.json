@@ -4,9 +4,9 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-   "start": "node server.js", 
-   "build": "babel src -d dist", 
-   "test": "jest"
+   "start": "node server.js",
+    "build": "echo 'No build step needed'", 
+    "test": "jest"
   },
   "keywords": [],
   "author": "Alemu Molla",
