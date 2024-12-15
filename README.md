@@ -24,6 +24,8 @@ The Vehicle Management System is designed to manage vehicle records and includes
 - Authentication and Authorization
 - Responsive UI with React and Bootstrap
 - Pagination for vehicle listings
+- remove unverified users from database on a certain period
+
 #### Installation
 
 ### Follow these steps to set up the project locally:

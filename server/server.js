@@ -7,6 +7,7 @@ import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import vehicleRoutes from './routes/vehicleRoutes.js';
 import { notFound, errorHandler } from './middlewares/errorMiddleware.js';
+import  {removeUnverifiedUsers}  from './controllers/removeUnverifiedUser.js';
 
 dotenv.config();
 
@@ -41,3 +42,5 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+removeUnverifiedUsers();

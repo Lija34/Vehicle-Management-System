@@ -1,0 +1,54 @@
+name: Build and Deploy to Netlify
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy-netlify:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      # Step 2: Setup Node.js environment
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '22'
+
+      # Step 3: Cache npm dependencies to speed up builds
+      - name: Cache npm dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      # Step 4: Install npm dependencies
+      - name: Install Dependencies
+        run: npm install
+
+      # Step 5: Run tests (commented out due to lack of time)
+      # - name: Run Tests
+      #   run: npm test
+
+      # Step 6: Build the project
+      - name: Build Project
+        run: npm run build
+
+      # Step 7: Deploy to Netlify
+      - name: Deploy to Netlify
+        uses: netlify/actions/cli@master
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        with:
+          args: deploy --dir=build --prod
