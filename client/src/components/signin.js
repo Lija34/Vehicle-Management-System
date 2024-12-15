@@ -26,14 +26,17 @@ const Login = ({ setAuthenticated, setUserRole }) => {
     e.preventDefault();
     setValues({ ...values, error: false, loading: true });
     try {
+      console.log('Submitting login:', { email, password });
       const response = await axios.post('https://vehicle-management-system-of9v.onrender.com/api/auth/login', { email, password }, { withCredentials: true });
+      console.log('Login response:', response.data);
       setValues({ ...values, loading: false });
       setAuthenticated(true);
       setUserRole(response.data.role);
     } catch (error) {
+      console.error('Login error:', error.response || error.message);
       let errorMsg = 'Failed to login';
       if (error.response) {
-        const responseError = error.response.data.error || '';
+        const responseError = error.response.data.message || '';
         if (error.response.status === 401 && responseError.includes('verify')) {
           errorMsg = 'Please verify your email before logging in. Check your inbox for the verification link.';
         } else if (error.response.status === 400 && responseError.includes('not exist')) {

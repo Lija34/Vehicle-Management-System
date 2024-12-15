@@ -8,37 +8,122 @@ import {transporter} from '../config/nodemailer.js';
 
 dotenv.config();
 
+
+import User from '../models/user.js';
+import asyncHandler from 'express-async-handler';
+import jwt from 'jsonwebtoken';
+import { generateToken, generateVerificationToken } from '../utils/generateToken.js';
+import bcrypt from 'bcryptjs';
+import dotenv from 'dotenv';
+import { transporter } from '../config/nodemailer.js';
+
+dotenv.config();
+
 // User Authentication
 export const authUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
+  console.log('Authenticating user:', email);
 
   const user = await User.findOne({ email });
+  console.log('User found:', user);
 
-  if (user && (await bcrypt.compare(password, user.password))) {
-    if (!user.isVerified) {
-      res.status(401);
-      throw new Error('Please verify your email before logging in.');
+  if (user) {
+    const isMatch = await bcrypt.compare(password, user.password);
+    console.log('Password match:', isMatch);
+
+    if (isMatch) {
+      if (!user.isVerified) {
+        res.status(401).json({ message: 'Please verify your email before logging in.' });
+        return;
+      }
+
+      const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '30d' });
+      console.log('Generated JWT token:', token);
+
+      res.cookie('token', token, { httpOnly: true, sameSite: 'strict', secure: false, path: '/' });
+      res.cookie('role', user.role, { httpOnly: true, sameSite: 'strict', secure: false, path: '/' });
+
+      res.json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      });
+    } else {
+      console.log('Invalid password');
+      res.status(401).json({ message: 'Invalid email or password' });
     }
-
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
-      expiresIn: '30d',
-    });
-
-    res.cookie('token', token, { httpOnly: true, sameSite: 'strict', secure: false, path: '/' });
-    res.cookie('role', user.role, { httpOnly: true, sameSite: 'strict', secure: false, path: '/' });
-
-    res.json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-    });
   } else {
-    res.status(401);
-    throw new Error('Invalid email or password');
+    console.log('User not found');
+    res.status(401).json({ message: 'Invalid email or password' });
   }
 });
 
+// Password Reset Request
+export const requestPasswordReset = async (req, res) => {
+  const { email } = req.body;
+  console.log('Password reset request for email:', email);
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    return res.status(400).json({ error: 'User not found' });
+  }
+
+  const resetToken = generateVerificationToken();
+  user.resetPasswordToken = resetToken;
+  user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+  await user.save();
+
+  const resetUrl = `${process.env.FRONTEND_DOMAIN}/reset/${resetToken}`;
+  console.log('Password reset URL:', resetUrl);
+
+  const mailOptions = {
+    from: process.env.EMAIL_FROM,
+    to: user.email,
+    subject: 'Password Reset',
+    text: `Please click the following link to reset your password: ${resetUrl}`
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error('Nodemailer Error:', error);
+      return res.status(500).json({ error: 'Error sending password reset email' });
+    }
+    console.log('Nodemailer Response:', info);
+    res.status(200).json({ message: 'Password reset email sent successfully' });
+  });
+};
+
+// Reset Password
+export const resetPassword = asyncHandler(async (req, res) => {
+  const { token } = req.params;
+  const { newPassword } = req.body;
+  console.log('Received reset password request with token:', token);
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log('Decoded token:', decoded);
+
+    const user = await User.findById(decoded.id);
+    console.log('Found user:', user);
+
+    if (!user) {
+      res.status(400).json({ message: 'Invalid token or user does not exist' });
+      return;
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+    await user.save();
+    console.log('Password reset successfully for user:', user.email);
+
+    res.json({ message: 'Password reset successfully' });
+  } catch (error) {
+    console.error('Error in resetPassword:', error);
+    res.status(400).json({ message: 'Invalid token or error processing request' });
+  }
+});
 
 export const registerUser = async (req, res) => {
   const { name, email, password } = req.body;
@@ -93,38 +178,6 @@ export const registerUser = async (req, res) => {
   }
 };
 
-export const requestPasswordReset = async (req, res) => {
-  const { email } = req.body;
-  const user = await User.findOne({ email });
-
-  if (!user) {
-    return res.status(400).json({ error: 'User not found' });
-  }
-
-  const resetToken = generateVerificationToken();
-  user.resetPasswordToken = resetToken;
-  user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
-  await user.save();
-
-  const resetUrl = `${process.env.FRONTEND_DOMAIN}/reset/${resetToken}`;
-
-  const mailOptions = {
-    from: process.env.EMAIL_FROM,
-    to: user.email,
-    subject: 'Password Reset',
-    text: `Please click the following link to reset your password: ${resetUrl}`
-  };
-
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.error('Nodemailer Error:', error);
-      return res.status(500).json({ error: 'Error sending password reset email' });
-    }
-    console.log('Nodemailer Response:', info);
-    res.status(200).json({ message: 'Password reset email sent successfully' });
-  });
-};
-
 export const verifyEmail = async (req, res) => {
   const { token } = req.params;
 
@@ -140,31 +193,6 @@ export const verifyEmail = async (req, res) => {
 
   res.status(200).json({ message: 'Email verified successfully' });
 };
-
-
-export const resetPassword = asyncHandler(async (req, res) => {
-  const { token } = req.params;
-  const { newPassword } = req.body;
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id);
-
-    if (!user) {
-      res.status(400);
-      throw new Error('Invalid token or user does not exist');
-    }
-
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(newPassword, salt);
-    await user.save();
-
-    res.json({ message: 'Password reset successfully' });
-  } catch (error) {
-    res.status(400).json({ message: 'Invalid token or error processing request' });
-  }
-});
-
 
 
 export const getUserInfo = async (req, res) => {

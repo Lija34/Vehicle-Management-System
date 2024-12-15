@@ -36,8 +36,8 @@ The client CI/CD pipeline automates the following tasks for the client-side appl
 1. Checkout the repository
 2. Set up the Node.js environment
 3. Install dependencies
-4. Run tests
-5. Build the application for production
+4. Run tests(commented out for now)
+5. Build the application for production and deploy to netlify
 
 #### Server CI/CD Pipeline
 
@@ -45,8 +45,8 @@ The server CI/CD pipeline automates the following tasks for the server-side appl
 1. Checkout the repository
 2. Set up the Node.js environment
 3. Install dependencies
-4. Run tests
-5. Build the application for production
+4. Run tests(commented out for now)
+5. Build the application for production and deploy to render
 
 NOTE! The CI/CD pipelines are configured to trigger automatically on push or pull request to the main branch. For details, navigate to the .github/workflows directory.
 

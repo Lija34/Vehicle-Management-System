@@ -71,9 +71,12 @@ const ResetPassword = () => {
       return;
     }
     try {
+      console.log('Submitting reset password:', { newPassword }); // Debugging
       const { data } = await axios.post(`https://vehicle-management-system-of9v.onrender.com/api/auth/reset-password/${token}`, { newPassword });
+      console.log('Reset password response:', data); // Debugging
       setValues({ ...values, messageType: 'success', message: data.message, error: '', newPassword: '', confirmNewPassword: '' });
     } catch (error) {
+      console.error('Reset password error:', error.response || error.message); // Debugging
       setValues({ ...values, messageType: 'danger', message: error.response?.data?.message || 'An error occurred', error: '' });
     }
   };
