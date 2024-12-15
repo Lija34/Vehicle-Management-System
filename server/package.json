@@ -4,8 +4,8 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-   "start": "node server.js",
-    "build": "echo 'No build step needed'", 
+    "start": "node server.js",
+    "build": "echo 'No build step needed'",
     "test": "jest"
   },
   "keywords": [],
@@ -13,7 +13,6 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
