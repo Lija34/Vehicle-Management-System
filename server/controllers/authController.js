@@ -15,6 +15,11 @@ export const authUser = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email });
 
   if (user && (await bcrypt.compare(password, user.password))) {
+    if (!user.isVerified) {
+      res.status(401);
+      throw new Error('Please verify your email before logging in.');
+    }
+
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
       expiresIn: '30d',
     });
@@ -156,8 +161,7 @@ export const resetPassword = asyncHandler(async (req, res) => {
 
     res.json({ message: 'Password reset successfully' });
   } catch (error) {
-    res.status(400);
-    throw new Error('Invalid token');
+    res.status(400).json({ message: 'Invalid token or error processing request' });
   }
 });
 

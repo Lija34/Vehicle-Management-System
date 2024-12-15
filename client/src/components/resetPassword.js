@@ -74,7 +74,7 @@ const ResetPassword = () => {
       const { data } = await axios.post(`https://vehicle-management-system-of9v.onrender.com/api/auth/reset-password/${token}`, { newPassword });
       setValues({ ...values, messageType: 'success', message: data.message, error: '', newPassword: '', confirmNewPassword: '' });
     } catch (error) {
-      setValues({ ...values, messageType: 'danger', message: error.response?.data?.error || 'An error occurred', error: '' });
+      setValues({ ...values, messageType: 'danger', message: error.response?.data?.message || 'An error occurred', error: '' });
     }
   };
 
