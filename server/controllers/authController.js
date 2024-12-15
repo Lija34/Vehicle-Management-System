@@ -9,11 +9,11 @@ import {transporter} from '../config/nodemailer.js';
 
 dotenv.config();
 
-
+// User Authentication
 export const authUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-   const user = await User.findOne({ email });
+  const user = await User.findOne({ email });
 
   if (user && (await user.matchPassword(password))) {
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
@@ -137,26 +137,29 @@ export const verifyEmail = async (req, res) => {
   res.status(200).json({ message: 'Email verified successfully' });
 };
 
-export const resetPassword = async (req, res) => {
+export const resetPassword = asyncHandler(async (req, res) => {
   const { token } = req.params;
   const { newPassword } = req.body;
 
-  const user = await User.findOne({
-    resetPasswordToken: token,
-    resetPasswordExpires: { $gt: Date.now() }
-  });
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
 
-  if (!user) {
-    return res.status(400).json({ error: 'Invalid or expired token' });
+    if (!user) {
+      res.status(400);
+      throw new Error('Invalid token or user does not exist');
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    res.json({ message: 'Password reset successfully' });
+  } catch (error) {
+    res.status(400);
+    throw new Error('Invalid token');
   }
+});
 
-  user.password = await bcrypt.hash(newPassword, 10);
-  user.resetPasswordToken = undefined;
-  user.resetPasswordExpires = undefined;
-  await user.save();
-
-  res.status(200).json({ message: 'Password reset successfully' });
-};
 
 
 export const getUserInfo = async (req, res) => {

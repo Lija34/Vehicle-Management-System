@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const Signup = () => {
+const ResetPassword = () => {
   const [values, setValues] = useState({
-    name: "",
-    email: "",
-    password: "",
+    newPassword: "",
     error: "",
     message: "",
     messageType: "",
@@ -24,22 +23,22 @@ const Signup = () => {
 
   const [showPasswordStrength, setShowPasswordStrength] = useState(false);
 
-  const { name, email, password, error, message, messageType, showPassword } = values;
+  const { newPassword, error, message, messageType, showPassword } = values;
+  const { token } = useParams();
 
   const handleChange = name => event => {
     const value = event.target.value;
     setValues({ ...values, error: false, [name]: value });
 
-    if (name === 'password') {
+    if (name === 'newPassword') {
       setShowPasswordStrength(true);
-      const personalInfo = [values.name.toLowerCase(), values.email.split('@')[0].toLowerCase()];
       const updatedStrength = {
         hasUpperCase: /[A-Z]/.test(value),
         hasLowerCase: /[a-z]/.test(value),
         hasNumber: /[0-9]/.test(value),
         hasSpecialChar: /[!@#$%^&*(),.?":{}|<>]/.test(value),
         isLongEnough: value.length >= 8,
-        noPersonalInfo: !personalInfo.some(info => value.toLowerCase().includes(info))
+        noPersonalInfo: true // You might need to add personal info logic if needed
       };
       setPasswordStrength(updatedStrength);
     }
@@ -66,13 +65,11 @@ const Signup = () => {
       setValues({ ...values, error: 'Password does not meet strength requirements', messageType: 'danger' });
       return;
     }
-    setValues({ ...values, error: false, loading: true });
     try {
-      await axios.post('https://vehicle-management-system-of9v.onrender.com/api/auth/register', { name, email, password });
-      setValues({ ...values, messageType: 'success', message: 'Account created successfully! Please check your inbox to verify your email.', loading: false, name: '', email: '', password: '' });
+      const { data } = await axios.post(`https://vehicle-management-system-of9v.onrender.com/api/auth/reset-password/${token}`, { newPassword });
+      setValues({ ...values, messageType: 'success', message: 'Password reset successfully!', error: '', newPassword: '' });
     } catch (error) {
-      const errorMsg = error.response?.data?.error || 'Failed to register user';
-      setValues({ ...values, messageType: 'danger', message: errorMsg, loading: false });
+      setValues({ ...values, messageType: 'danger', message: error.response?.data?.error || 'An error occurred', error: '' });
     }
   };
 
@@ -93,47 +90,23 @@ const Signup = () => {
 
   return (
     <div className="container mt-5">
-      <h2 className="text-center mb-4">Signup</h2>
+      <h2 className="text-center mb-4">Reset Password</h2>
       {showMessage()}
       {showError()}
       <form onSubmit={handleSubmit} className="card p-4">
         <div className="mb-3">
-          <label htmlFor="name" className="form-label">Name</label>
-          <input 
-            type="text" 
-            className="form-control" 
-            id="name" 
-            placeholder="Name" 
-            value={name} 
-            onChange={handleChange("name")} 
-            required 
-          />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="email" className="form-label">Email</label>
-          <input 
-            type="email" 
-            className="form-control" 
-            id="email" 
-            placeholder="Email" 
-            value={email} 
-            onChange={handleChange("email")} 
-            required 
-          />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="password" className="form-label">Password</label>
+          <label htmlFor="newPassword" className="form-label">New Password</label>
           <div className="input-group">
-            <input 
-              onChange={handleChange("password")} 
+            <input
+              onChange={handleChange("newPassword")}
               onFocus={() => setShowPasswordStrength(true)}
               onBlur={() => setShowPasswordStrength(false)}
-              type={showPassword ? "text" : "password"} 
-              className="form-control" 
-              id="password" 
-              placeholder="Password" 
-              value={password} 
-              required 
+              type={showPassword ? "text" : "password"}
+              className="form-control"
+              id="newPassword"
+              placeholder="Enter your new password"
+              value={newPassword}
+              required
             />
             <div className="input-group-append">
               <span className="input-group-text" onClick={toggleShowPassword} style={{ cursor: "pointer" }}>
@@ -158,16 +131,13 @@ const Signup = () => {
               <p className={passwordStrength.isLongEnough ? 'text-success' : 'text-danger'}>
                 {passwordStrength.isLongEnough ? '✓' : '✗'} Minimum 8 characters
               </p>
-              <p className={passwordStrength.noPersonalInfo ? 'text-success' : 'text-danger'}>
-                {passwordStrength.noPersonalInfo ? '✓' : '✗'} Does not contain personal info
-              </p>
             </div>
           )}
         </div>
-        <button type="submit" className="btn btn-primary w-100">Signup</button>
+        <button type="submit" className="btn btn-primary w-100">Reset Password</button>
       </form>
     </div>
   );
 };
 
-export default Signup;
+export default ResetPassword;

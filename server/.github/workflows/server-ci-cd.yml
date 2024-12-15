@@ -43,7 +43,7 @@ jobs:
       # Step 6: Build the project
       - name: Build Project
         run: npm run build
-
+        working-directory: ./server
       # Step 7: Deploy to Render
       - name: Deploy to Render
         uses: render-actions/deploy@v1

@@ -6,10 +6,11 @@ This project is a Vehicle Management System built using MERN (MongoDB, Express, 
 
 1. [Introduction](#introduction)
 2. [Features](#features)
-3. [Installation](#installation)
-4. [Usage](#usage)
-5. [API Endpoints](#api-endpoints)
-6. [Pagination Implementation](#pagination-implementation)
+3. [CI/CD Pipelines](#cicd-pipelines)
+4. [Installation](#installation)
+5. [Usage](#usage)
+6. [API Endpoints](#api-endpoints)
+7. [Pagination Implementation](#pagination-implementation)
 
 ## Introduction
 
@@ -26,7 +27,30 @@ The Vehicle Management System is designed to manage vehicle records and includes
 - Pagination for vehicle listings
 - remove unverified users from database on a certain period
 
-#### Installation
+
+## CI/CD Pipelines
+
+#### Client CI/CD Pipeline
+
+The client CI/CD pipeline automates the following tasks for the client-side application:
+1. Checkout the repository
+2. Set up the Node.js environment
+3. Install dependencies
+4. Run tests
+5. Build the application for production
+
+#### Server CI/CD Pipeline
+
+The server CI/CD pipeline automates the following tasks for the server-side application:
+1. Checkout the repository
+2. Set up the Node.js environment
+3. Install dependencies
+4. Run tests
+5. Build the application for production
+
+NOTE! The CI/CD pipelines are configured to trigger automatically on push or pull request to the main branch. For details, navigate to the .github/workflows directory.
+
+## Installation
 
 ### Follow these steps to set up the project locally:
 - Clone the repository:

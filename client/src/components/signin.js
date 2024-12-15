@@ -27,8 +27,6 @@ const Login = ({ setAuthenticated, setUserRole }) => {
     setValues({ ...values, error: false, loading: true });
     try {
       const response = await axios.post('https://vehicle-management-system-of9v.onrender.com/api/auth/login', { email, password }, { withCredentials: true });
-      document.cookie = `token=${response.data.token};path=/;`;
-      document.cookie = `role=${response.data.role};path=/;`;
       setValues({ ...values, loading: false });
       setAuthenticated(true);
       setUserRole(response.data.role);
@@ -73,27 +71,27 @@ const Login = ({ setAuthenticated, setUserRole }) => {
       <form onSubmit={handleSubmit} className="card p-4">
         <div className="mb-3">
           <label htmlFor="email" className="form-label">Email</label>
-          <input 
-            onChange={handleChange("email")} 
-            type="email" 
-            className="form-control" 
-            id="email" 
-            placeholder="Email" 
-            value={email} 
-            required 
+          <input
+            onChange={handleChange("email")}
+            type="email"
+            className="form-control"
+            id="email"
+            placeholder="Email"
+            value={email}
+            required
           />
         </div>
         <div className="mb-3">
           <label htmlFor="password" className="form-label">Password</label>
           <div className="input-group">
-            <input 
-              onChange={handleChange("password")} 
-              type={showPassword ? "text" : "password"} 
-              className="form-control" 
-              id="password" 
-              placeholder="Password" 
-              value={password} 
-              required 
+            <input
+              onChange={handleChange("password")}
+              type={showPassword ? "text" : "password"}
+              className="form-control"
+              id="password"
+              placeholder="Password"
+              value={password}
+              required
             />
             <div className="input-group-append">
               <span className="input-group-text" onClick={toggleShowPassword} style={{ cursor: "pointer" }}>
@@ -102,7 +100,7 @@ const Login = ({ setAuthenticated, setUserRole }) => {
             </div>
           </div>
         </div>
-        <button type="submit" className="btn btn-primary w-100">Sinin</button>
+        <button type="submit" className="btn btn-primary w-100">Signin</button>
         <div className="mt-3 text-center">
           <Link to="/forgot-password">Forgot Password?</Link>
         </div>
