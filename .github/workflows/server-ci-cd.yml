@@ -28,22 +28,25 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('server/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
       # Step 4: Install npm dependencies
       - name: Install Dependencies
         run: npm install
+        working-directory: ./server
 
       # Step 5: Run tests (commented out due to lack of time)
       # - name: Run Tests
       #   run: npm test
+      #   working-directory: ./server
 
       # Step 6: Build the project
       - name: Build Project
         run: npm run build
         working-directory: ./server
+
       # Step 7: Deploy to Render
       - name: Deploy to Render
         uses: render-actions/deploy@v1

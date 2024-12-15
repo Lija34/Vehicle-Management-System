@@ -28,17 +28,19 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('client/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
       # Step 4: Install npm dependencies
       - name: Install Dependencies
         run: npm install
+        working-directory: ./client
 
       # Step 5: Run tests (commented out due to lack of time)
       # - name: Run Tests
       #   run: npm test
+      #   working-directory: ./client
 
       # Step 6: Build the project
       - name: Build Project
