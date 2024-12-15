@@ -19,7 +19,7 @@ export const authUser = asyncHandler(async (req, res) => {
     console.log('User found:', user);
 
     if (user) {
-      const isMatch = await bcrypt.compare(password, user.password);
+      const isMatch = await user.matchPassword(password); // Use matchPassword method
       console.log('Password match result:', isMatch);
 
       if (isMatch) {
@@ -56,7 +56,6 @@ export const authUser = asyncHandler(async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
 
 // Password Reset Request
 
