@@ -12,7 +12,6 @@ const userSchema = new mongoose.Schema({
   resetPasswordExpires: Date
 });
 
-// Password hash middleware
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
     return next();
@@ -22,7 +21,6 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-// Method to compare entered password with hashed password
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };

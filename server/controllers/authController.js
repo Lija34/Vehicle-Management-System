@@ -100,17 +100,17 @@ export const requestPasswordReset = async (req, res) => {
 export const resetPassword = asyncHandler(async (req, res) => {
   const { token } = req.params;
   const { newPassword } = req.body;
-  console.log('Received reset password request with token:', token); // Debugging
+  console.log('Received reset password request with token:', token);
 
   try {
     const user = await User.findOne({
       resetPasswordToken: token,
       resetPasswordExpires: { $gt: Date.now() }
     });
-    console.log('Found user:', user); // Debugging
+    console.log('Found user:', user);
 
     if (!user) {
-      console.log('Invalid or expired token'); // Debugging
+      console.log('Invalid or expired token');
       res.status(400).json({ message: 'Invalid token or user does not exist' });
       return;
     }
@@ -120,15 +120,14 @@ export const resetPassword = asyncHandler(async (req, res) => {
     user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;
     await user.save();
-    console.log('Password reset successfully for user:', user.email); // Debugging
+    console.log('Password reset successfully for user:', user.email);
 
     res.json({ message: 'Password reset successfully' });
   } catch (error) {
-    console.error('Error in resetPassword:', error); // Debugging
+    console.error('Error in resetPassword:', error);
     res.status(400).json({ message: 'Invalid token or error processing request' });
   }
 });
-;
 
 export const registerUser = async (req, res) => {
   const { name, email, password } = req.body;
@@ -183,22 +182,30 @@ export const registerUser = async (req, res) => {
   }
 };
 
-export const verifyEmail = async (req, res) => {
+export const verifyEmail = asyncHandler(async (req, res) => {
   const { token } = req.params;
+  console.log('Received email verification request with token:', token);
 
-  const user = await User.findOne({ verificationToken: token });
+  try {
+    const user = await User.findOne({ verificationToken: token });
+    console.log('User found for verification:', user);
 
-  if (!user) {
-    return res.status(400).json({ error: 'Invalid or expired token' });
+    if (!user) {
+      res.status(400).json({ message: 'Invalid or expired token' });
+      return;
+    }
+
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    await user.save();
+    console.log('Email verified successfully for user:', user.email);
+
+    res.json({ message: 'Email verified successfully' });
+  } catch (error) {
+    console.error('Error in verifyEmail:', error);
+    res.status(400).json({ message: 'Invalid token or error processing request' });
   }
-
-  user.isVerified = true;
-  user.verificationToken = undefined;
-  await user.save();
-
-  res.status(200).json({ message: 'Email verified successfully' });
-};
-
+});
 
 export const getUserInfo = async (req, res) => {
   const user = req.user;
