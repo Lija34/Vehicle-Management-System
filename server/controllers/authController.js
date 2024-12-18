@@ -57,8 +57,6 @@ export const authUser = asyncHandler(async (req, res) => {
   }
 });
 
-
-
 export const registerUser = async (req, res) => {
   const { name, email, password } = req.body;
   const userExists = await User.findOne({ email });
@@ -112,6 +110,7 @@ export const registerUser = async (req, res) => {
   }
 };
 
+
 export const requestPasswordReset = async (req, res) => {
   const { email } = req.body;
   const user = await User.findOne({ email });
@@ -147,17 +146,24 @@ export const requestPasswordReset = async (req, res) => {
 export const verifyEmail = async (req, res) => {
   const { token } = req.params;
 
-  const user = await User.findOne({ verificationToken: token });
+  try {
+    const user = await User.findOne({ verificationToken: token });
 
-  if (!user) {
-    return res.status(400).json({ error: 'Invalid or expired token' });
+    if (!user) {
+      console.log('Invalid or expired token');
+      return res.status(400).json({ message: 'Invalid or expired token' });
+    }
+
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    await user.save();
+
+    console.log('Email verified successfully for user:', user.email);
+    res.status(200).json({ message: 'Email verified successfully' });
+  } catch (error) {
+    console.error('Error in verifyEmail:', error);
+    res.status(500).json({ message: 'Server error' });
   }
-
-  user.isVerified = true;
-  user.verificationToken = undefined;
-  await user.save();
-
-  res.status(200).json({ message: 'Email verified successfully' });
 };
 
 export const resetPassword = asyncHandler(async (req, res) => {
